@@ -19,6 +19,7 @@ class LeaderSerializer(serializers.ModelSerializer):
 
 class CandidateSerializer(serializers.ModelSerializer):
     leader = LeaderSerializer()
+    co_leader = LeaderSerializer()
 
     class Meta:
         model = Candidate

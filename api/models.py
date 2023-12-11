@@ -6,7 +6,6 @@ class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_data', related_query_name='user_data')
     no_phone = models.CharField(verbose_name='Nomor Telepon :', max_length=16)
     has_vote = models.BooleanField(default=False)
-    date_of_birth = models.DateField()
 
     def __str__(self):
         return f"{self.user}"
