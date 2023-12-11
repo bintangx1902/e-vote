@@ -11,16 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class LeaderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Leader
-        fields = '__all__'
-
-
 class CandidateSerializer(serializers.ModelSerializer):
-    leader = LeaderSerializer()
-    co_leader = LeaderSerializer()
-
     class Meta:
         model = Candidate
         fields = '__all__'
@@ -79,4 +70,3 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
-        # extra_kwargs = {'password': {'write_only': True}}

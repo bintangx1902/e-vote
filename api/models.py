@@ -11,19 +11,10 @@ class UserData(models.Model):
         return f"{self.user}"
 
 
-class Leader(models.Model):
-    name = models.CharField(max_length=255)
-    photo = models.ImageField(upload_to='images/', default='')
-    desc = models.TextField()
-
-    def __str__(self):
-        return f"{self.name}"
-
-
 class Candidate(models.Model):
     candidate = models.CharField(max_length=255)
-    leader = models.ForeignKey(Leader, on_delete=models.CASCADE)
-    co_leader = models.ForeignKey(Leader, on_delete=models.CASCADE, related_name='co_leader', related_query_name='co_leader')
+    leader = models.CharField(max_length=255, default='')
+    co_leader = models.CharField(max_length=255, default='')
     vote = models.IntegerField(default=0, null=True, blank=True)
 
     def __str__(self):
