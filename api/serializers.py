@@ -1,5 +1,7 @@
+from http.client import HTTPException
+from django.http import Http404
 from django.contrib.auth import authenticate
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
@@ -50,6 +52,22 @@ class UserRegisterSerializer(serializers.Serializer):
             is_active=True
         )
         return instance
+
+
+class VoteSerializer(serializers.Serializer):
+    candidate_id = serializers.IntegerField()
+    vote = serializers.IntegerField()
+
+    def save(self):
+        candidate_id = self.data.get('candidate_id')
+        try:
+            candidate = Candidate.objects.get(pk=candidate_id)
+        except ObjectDoesNotExist:
+            raise Http404
+
+        candidate.vote += 1
+        candidate.save()
+
 
 
 # class UserLoginSerializer(serializers.Serializer):

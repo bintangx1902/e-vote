@@ -4,18 +4,20 @@ import datetime, jwt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import *
 from rest_framework.permissions import *
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
 from .serializers import *
 from rest_framework.permissions import *
 from django.contrib.auth import logout, login
 from rest_framework.authtoken.models import Token
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import authentication_classes, permission_classes
 
 
 def payloads(token):
@@ -72,31 +74,31 @@ class UserRegistrationEndPoint(APIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def vote_candidate_endpoint(req):
-    candidate_id = int(req.data.get('candidate_id'))
-    vote = int(req.data.get('vote'))
-    if not vote:
-        return Response()
+    data = req.data
+    serializer = VoteSerializer(data=data)
+    if serializer.is_valid(raise_exception=True):
+        if not int(serializer.data.get('vote')):
+            return Response({'msg': 'no vote'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    try:
-        q = Candidate.objects.get(pk=candidate_id)
-        q.vote += 1
-        q.save()
-        return Response({'msg': 'Berhasil Vote'}, status=status.HTTP_201_CREATED)
-
-    except Candidate.DoesNotExist:
-        return Response({'Error': 'Candidate does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer.save()
+        user = req.user.user_data
+        user.has_vote = True
+        user.save()
+        return Response({"msg": "You've been voted for this"}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginEndPoint(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = (SessionAuthentication, )
+    authentication_classes = (SessionAuthentication,)
 
     def post(self, format=None):
         data = self.request.data
         # serializer = UserLoginSerializer(data=data)
         # if serializer.is_valid():
-            # user = serializer.check_user(data)
+        # user = serializer.check_user(data)
         # user = authenticate(username=data.get('username'), password=data.get('password'))
         token, _ = Token.objects.get_or_create(user=User.objects.get(username=self.request.data.get('username')))
         return Response({'token': token.key}, status=status.HTTP_200_OK)
@@ -111,7 +113,7 @@ def logout_view(request):
 
 class UserViewEndPoint(APIView):
     permission_classes = [IsAuthenticated, ]
-    authentication_classes = (SessionAuthentication, )
+    authentication_classes = (SessionAuthentication,)
 
     def get(self, format=None):
         user = UserSerializer(self.request.user)
