@@ -111,6 +111,7 @@ class UserLoginEndPoint(APIView):
 
 
 @api_view(['POST'])
+@authentication_classes([IsAuthenticated])
 def logout_view(request):
     request.user.auth_token.delete()
     return Response({'msg': 'Logged out successfully'}, status=status.HTTP_200_OK)
