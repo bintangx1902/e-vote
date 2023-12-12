@@ -60,17 +60,24 @@ class UserRegistrationEndPoint(APIView):
         data = self.request.data
         serializer = UserRegisterSerializer(data=data)
         if serializer.is_valid():
-            i = serializer.save()
-            dob = data.get('dob')
-            phone = data.get('phone')
-            instance = UserData(
-                date_of_birth=dob,
-                no_phone=phone,
-                user=i
-            )
-            instance.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            username = serializer.validated_data.get('username')
+            if User.objects.filter(username=username).exists():
+                return Response({"error": "Username already exists"}, status=status.HTTP_403_FORBIDDEN)
+
+            user_instance = serializer.save()
+            return Response({"msg": "berhasil"}, status=status.HTTP_201_CREATED)
+        return Response({"msg": "Failed"}, status=status.HTTP_400_BAD_REQUEST)
+        # if serializer.is_valid():
+        #     i = serializer.save(commit=False)
+        #     phone = data.get('phone')
+        #     instance = UserData(
+        #         no_phone=phone,
+        #         user=i
+        #     )
+        #     i.save()
+        #     instance.save()
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
