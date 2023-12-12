@@ -26,6 +26,7 @@ class UserRegisterSerializer(serializers.Serializer):
     last_name = serializers.CharField()
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
+    phone = serializers.CharField()
 
     def validate(self, data):
         password = data.get('password')
@@ -42,8 +43,9 @@ class UserRegisterSerializer(serializers.Serializer):
         email = clean_data.get('email')
         f_name = clean_data.get('first_name')
         l_name = clean_data.get('last_name')
+        phone = clean_data.get('phone')
 
-        instance = User.objects.create_user(
+        user_instance = User.objects.create_user(
             username=username,
             password=password,
             email=email,
@@ -51,7 +53,23 @@ class UserRegisterSerializer(serializers.Serializer):
             last_name=l_name,
             is_active=True
         )
-        return instance
+
+        # Create UserData instance associated with the User
+        user_data_instance = UserData.objects.create(
+            no_phone=phone,
+            user=user_instance
+        )
+
+        return user_instance
+        # instance = User.objects.create_user(
+        #     username=username,
+        #     password=password,
+        #     email=email,
+        #     first_name=f_name,
+        #     last_name=l_name,
+        #     is_active=True
+        # )
+        # return instance
 
 
 class VoteSerializer(serializers.Serializer):
