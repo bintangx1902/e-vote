@@ -78,6 +78,11 @@ class UserRegistrationEndPoint(APIView):
 def vote_candidate_endpoint(req):
     data = req.data
     serializer = VoteSerializer(data=data)
+
+    user = req.user
+    if user.user_data.has_vote:
+        return Response({'msg': 'Already Voted!'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
     if serializer.is_valid(raise_exception=True):
         if not int(serializer.data.get('vote')):
             return Response({'msg': 'no vote'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -86,7 +91,7 @@ def vote_candidate_endpoint(req):
         user = req.user.user_data
         user.has_vote = True
         user.save()
-        return Response({"msg": "You've been voted for this"}, status=status.HTTP_201_CREATED)
+        return Response({"msg": "Your vote has been recorded"}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
