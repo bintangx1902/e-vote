@@ -81,7 +81,7 @@ def vote_candidate_endpoint(req):
 
     user = req.user
     if user.user_data.has_vote:
-        return Response({'msg': 'Already Voted!'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response({'msg': 'Already Voted!'}, status=status.HTTP_403_FORBIDDEN)
 
     if serializer.is_valid(raise_exception=True):
         if not int(serializer.data.get('vote')):
