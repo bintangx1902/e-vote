@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-$74!v70z^!r)cq1b-ai$if_k#vqbh7gq0##dt#m-zhf4@0fkr*
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+os.environ['HTTPS'] = 'on'
 
 
 # Application definition
