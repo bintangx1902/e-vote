@@ -17,6 +17,7 @@ class Product(models.Model):
     product_img = models.ImageField(upload_to='goods/product/')
     price = models.FloatField(default=0, validators=[MinValueValidator(0)])
     quantity = models.IntegerField(default=0)
+    description = models.TextField(default='')
 
     def __str__(self):
         return self.name

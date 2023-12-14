@@ -2,6 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.generics import *
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,11 +27,20 @@ class ProductListEndPoint(ListAPIView):
     serializer_class = ProductSerializer
 
     def list(self, *args, **kwargs):
-        query = self.get_queryset()
+        category = self.request.GET.get('cid')
+        if category is not None:
+            category = int(category)
+            query = self.get_queryset().filter(category__id=category)
+        else:
+            query = self.get_queryset()
         ser = self.serializer_class(query, many=True, context={'request': self.request})
         if query.exists():
             return Response(ser.data, status=status.HTTP_200_OK)
         return Response({"msg": "not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class ProductDetail(APIView):
+    def get(self, format=None):
+        return
 
 
 @api_view(['GET', 'POST'])
