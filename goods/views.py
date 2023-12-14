@@ -28,6 +28,8 @@ class ProductListEndPoint(ListAPIView):
         query = self.get_queryset()
         ser = self.serializer_class(query, many=True, context={'request': self.request})
         if query.exists():
+            for item in ser.data:
+                item['category_img'] = item['category_img'].replace('https', 'http')
             return Response(ser.data, status=status.HTTP_200_OK)
         return Response({"msg": "not found"}, status=status.HTTP_404_NOT_FOUND)
 
