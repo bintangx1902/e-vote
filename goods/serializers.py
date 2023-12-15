@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if representation['category_img'] is not None:
-	    representation['category_img'] = representation['category_img'].replace('https', 'http')
+            representation['category_img'] = representation['category_img'].replace('https', 'http')
         return representation
 
 
@@ -23,8 +23,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-	if representation['product_img'] is not None:
-	    representation['product_img'] = representation['product_img'].replace('https', 'http')
+        if representation['product_img'] is not None: representation['product_img'] = representation[
+            'product_img'].replace('https', 'http')
         return representation
 
 
