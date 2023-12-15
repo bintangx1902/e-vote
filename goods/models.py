@@ -1,6 +1,8 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator
 from django.db import models
-
+from os import path, remove
+from django.conf import settings
 
 # Create your models here.
 class Category(models.Model):
@@ -9,6 +11,15 @@ class Category(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def delete(self, using=None, *args, **kwargs):
+        try:
+            file_path = path.join(settings.MEDIA_ROOT, self.product_img.name)
+            if path.isfile(file_path):
+                remove(file_path)
+        except ObjectDoesNotExist as e:
+            print(f"file does not exist : {e}")
+        return super().delete(using=None, *args, **kwargs)
 
 
 class Product(models.Model):
@@ -21,3 +32,12 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def delete(self, using=None, *args, **kwargs):
+        try:
+            file_path = path.join(settings.MEDIA_ROOT, self.product_img.name)
+            if path.isfile(file_path):
+                remove(file_path)
+        except ObjectDoesNotExist as e:
+            print(f"file does not exist : {e}")
+        return super().delete(using=None, *args, **kwargs)
