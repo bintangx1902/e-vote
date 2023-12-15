@@ -30,11 +30,12 @@ class ProductListEndPoint(ListAPIView):
         category = self.request.GET.get('cid')
         if category is not None:
             category = int(category)
-        query = self.get_queryset().filter(category__id=category)
-        ser = self.serializer_class(query, many=True, context={'request': self.request})
-        if query.exists():
-            return Response(ser.data, status=status.HTTP_200_OK)
+            query = self.get_queryset().filter(category__id=category)
+            ser = self.serializer_class(query, many=True, context={'request': self.request})
+            if query.exists():
+                return Response(ser.data, status=status.HTTP_200_OK)
         return Response({"msg": "not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class ProductDetail(APIView):
     def get(self, format=None):
